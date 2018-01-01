@@ -19,6 +19,7 @@
         ...
           </div>
           <div class='col-xs-9'>
+          	<span>{{ Session::get('message') }}</span>
             @yield('main')
           </div>
       </div>
