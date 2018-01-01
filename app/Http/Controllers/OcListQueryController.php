@@ -15,6 +15,7 @@ class OcListQueryController extends Controller
     public function index()
     {
         return view('oc_list_queries.index')
+        	->with('title','Orden de Compra List Queries')
             ->with('oc_list_queries',OcListQuery::all());
     }
 
