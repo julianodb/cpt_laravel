@@ -22,7 +22,7 @@ class CreateOcListQuery extends Migration
         Schema::create('oc_list_query_orden_compra', function(Blueprint $table){
             $table->unsignedBigInteger('oc_list_query_id');
             $table->unsignedBigInteger('orden_compra_id');
-            $table->string('name',200);
+            $table->string('name',500);
             $table->unsignedInteger('oc_state_id');
 
             $table->foreign('oc_list_query_id')
