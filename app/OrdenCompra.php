@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrdenCompra extends Model
 {
     public $timestamps = false;
+    protected $fillable = ['code'];
 
     /**
      * The OcListQuery's that contain the OrdenCompra

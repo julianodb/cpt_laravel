@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OcState extends Model
 {
     public $timestamps = false;
+    protected $fillable = ['code', 'name'];
 
     /**
      * Get the OcListQuery & OrdenCompra that belong to this state.
