@@ -1,6 +1,15 @@
 @extends('layouts.base')
 
 @section('main')
+{!! Form::open(['url' => 'oc_list_queries']) !!}
+{!! Form::text('date',null,['id' => 'datepicker']) !!}
+{!! Form::submit('Crear') !!}
+{!! Form::close() !!}
+<script>
+	$( function() {
+		$( "#datepicker" ).datepicker({dateFormat: "dd/mm/yy"});
+	} );
+</script>
 <form>
 <div class="form-group">
 @foreach($oc_list_queries as $item)

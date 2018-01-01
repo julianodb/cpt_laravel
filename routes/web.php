@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/oc_list_queries', 'OcListQueryController@index');
+Route::get('/oc_list_queries', 'OcListQueryController@index')->name('oc_list_queries');
+Route::post('/oc_list_queries','OcListQueryController@store');
 
 Route::resource('ocs', 'OrdenCompraController');
+
