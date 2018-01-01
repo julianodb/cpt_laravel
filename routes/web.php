@@ -15,4 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/oc_list_queries', 'OcListQueryController@index');
+
 Route::resource('ocs', 'OrdenCompraController');
