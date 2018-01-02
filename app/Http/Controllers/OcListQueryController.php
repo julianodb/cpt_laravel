@@ -19,7 +19,7 @@ class OcListQueryController extends Controller
     {
         return view('oc_list_queries.index')
         	->with('title','Orden de Compra List Queries')
-            ->with('oc_list_queries',OcListQuery::all());
+            ->with('oc_list_queries',OcListQuery::withCount('orden_compras')->get());
     }
 
     /**
@@ -40,13 +40,20 @@ class OcListQueryController extends Controller
     	$result = file_get_contents($req_url);
     	$json = json_decode($result);
     	$oc_list_query = OcListQuery::create([ 'date'=>$date,'query_date'=> new DateTime() ]);
+
+    	$ocs = [];
+    	$oc_attr = [];
     	foreach($json->Listado as $oc) {
-    		$new_oc = OrdenCompra::firstOrCreate(['code' => $oc->Codigo]);
-    		$oc_state = OcState::firstOrCreate(['code' => $oc->CodigoEstado, 'name' => $oc->CodigoEstado]);
-    		$oc_list_query->orden_compras()->attach($new_oc, [
-    			'name'=>$oc->Nombre, 
-    			'oc_state_id'=>$oc_state->id]);
+    		$ocs[] = OrdenCompra::firstOrNew(['code' => $oc->Codigo]);
+    		$oc_attr[] = [
+    			'name' => $oc->Nombre,
+    			'oc_state_id' => OcState::firstOrCreate([
+    				'code' => $oc->CodigoEstado, 
+    				'name' => $oc->CodigoEstado])->id];
     	}
+    	
+    	$oc_list_query->orden_compras()->saveMany($ocs,$oc_attr);
+
         return redirect()->route('oc_list_queries')->with('message',$json->Cantidad);
     }
 
