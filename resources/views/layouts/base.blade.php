@@ -19,7 +19,9 @@
         ...
           </div>
           <div class='col-xs-9'>
-          	<span>{{ Session::get('message') }}</span>
+          	@if(Session::get('message'))
+          		<div class="alert alert-success">{{ Session::get('message') }}</div>
+          	@endif
             @yield('main')
           </div>
       </div>

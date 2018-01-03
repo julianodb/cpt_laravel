@@ -19,7 +19,7 @@ class OcListQueryController extends Controller
     public function index()
     {
         return view('oc_list_queries.index')
-        	->with('title','Orden de Compra List Queries')
+        	->with('title','Lista de Órdenes de Compra')
             ->with('oc_list_queries',OcListQuery::withCount('orden_compras')->get());
     }
 
@@ -55,7 +55,13 @@ class OcListQueryController extends Controller
     	
     	$oc_list_query->orden_compras()->saveMany($ocs,$oc_attr);
 
-        return redirect()->route('oc_list_queries')->with('message',$json->Cantidad);
+        return redirect()
+        	->route('oc_list_queries')
+        	->with('message','Lista de Órdenes de Compra para el '.
+        					 $request->request->get('date').
+        					 ', con '.
+        					 $json->Cantidad.
+        					 ' items, adicionada con éxito.');
     }
 
 }
