@@ -19,4 +19,11 @@ class OrdenCompra extends Model
             ->withPivot('oc_state_id')
         	->using('App\OcListQueryOrdenCompra');
     }
+
+    /**
+     * Convert null to empty string when setting code
+     */
+    public function setCodeAttribute($value) {
+        $this->attributes['code'] = is_null($value) ? "" : $value;
+    }
 }
