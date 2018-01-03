@@ -59,9 +59,9 @@ class OcListQueryController extends Controller
         	->route('oc_list_queries')
         	->with('message','Lista de Órdenes de Compra para el '.
         					 $request->request->get('date').
-        					 ', con '.
+        					 ' adicionada con éxito. ('.
         					 $json->Cantidad.
-        					 ' items, adicionada con éxito.');
+        					 ' items)');
     }
 
 }
