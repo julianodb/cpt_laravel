@@ -7,6 +7,7 @@ use App\OcListQuery;
 use App\OrdenCompra;
 use App\OcState;
 use DateTime;
+use Facades\App\Util\MercadoPublico;
 
 class OcListQueryController extends Controller
 {
@@ -37,7 +38,7 @@ class OcListQueryController extends Controller
  		$req_url .= 'ordenesdecompra.json';
  		$req_url .= '?fecha='.$date->format('dmY');
  		$req_url .= '&ticket='.$ticket;
-    	$result = file_get_contents($req_url);
+    	$result = MercadoPublico::get($req_url);
     	$json = json_decode($result);
     	$oc_list_query = OcListQuery::create([ 'date'=>$date,'query_date'=> new DateTime() ]);
 
