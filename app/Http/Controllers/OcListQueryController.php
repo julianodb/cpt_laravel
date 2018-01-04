@@ -42,15 +42,31 @@ class OcListQueryController extends Controller
     	$json = json_decode($result);
     	$oc_list_query = OcListQuery::create([ 'date'=>$date,'query_date'=> new DateTime() ]);
 
+    	$oc_states = OcState::all();
+
+    	$all_oc = collect($json->Listado);
+    	$all_oc = $all_oc->map(function($item, $key){ 
+    		return ['code'=>$item->CodigoEstado,'name'=>$item->CodigoEstado]; });
+    	foreach($all_oc->unique() as $oc) {
+    		if($oc_states->where('code',$oc['code'])->where('name',$oc['name'])->count()==0) {
+    			OcState::firstOrCreate([
+    				'code' => $oc['code'], 
+    				'name' => $oc['name']]);
+    			$oc_states = OcState::all();
+    		}
+    	}
+
     	$ocs = [];
     	$oc_attr = [];
+
     	foreach($json->Listado as $oc) {
     		$ocs[] = OrdenCompra::firstOrNew(['code' => $oc->Codigo]);
     		$oc_attr[] = [
     			'name' => $oc->Nombre,
-    			'oc_state_id' => OcState::firstOrCreate([
-    				'code' => $oc->CodigoEstado, 
-    				'name' => $oc->CodigoEstado])->id];
+    			'oc_state_id' => $oc_states->where('code',$oc->CodigoEstado)
+    				->where('name',$oc->CodigoEstado)
+    				->first()
+    				->id];
     	}
     	
     	$oc_list_query->orden_compras()->saveMany($ocs,$oc_attr);
