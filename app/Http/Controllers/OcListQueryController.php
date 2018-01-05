@@ -58,7 +58,7 @@ class OcListQueryController extends Controller
     	$json = json_decode($result);
 
     	if(property_exists($json, 'Codigo') and property_exists($json, 'Mensaje')) {
-    		return redirect()>route('oc_list_queries')
+    		return redirect('oc_list_queries')
 	        	->withErrors([$json->Codigo=> $json->Mensaje]);
     	}
 
@@ -67,7 +67,7 @@ class OcListQueryController extends Controller
     	$oc_states = OcState::all();
 
     	if(!property_exists($json, 'Listado')){
-    		return redirect()>route('oc_list_queries')
+    		return redirect('oc_list_queries')
 	        	->withErrors(['empty'=> 'Lista vacia o error encontrado']);
     	}
 
