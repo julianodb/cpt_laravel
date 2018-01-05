@@ -36,7 +36,7 @@ class TestOcListQuery extends TestCase
      *
      * @return void
      */
-    public function testStoreOcListQueryFutureDateFails()
+    public function testFutureDateFails()
     {
         $test_date = new DateTime('tomorrow');
         $test_date = $test_date->format('d-m-Y');
@@ -50,6 +50,24 @@ class TestOcListQuery extends TestCase
         //$response->assertDontSee($test_date);
         $response->assertDontSee(strval($json->Cantidad));
         $response->assertSee('danger'); // danger BS alert with error
+
+    }
+
+    /**
+     * Error from API should generate error message.
+     *
+     * @return void
+     */
+    public function testAPIErrorGeneratesError()
+    {
+        $sample = file_get_contents("tests/error.json");
+        $json = json_decode($sample);
+
+        MercadoPublico::shouldReceive('get')->andReturn($sample);
+        $response = $this->followingRedirects()->post('/oc_list_queries',['date'=> '01-01-2017']);
+        $response->assertSuccessful();
+        $response->assertSee('danger'); // danger BS alert with error
+        $response->assertSee($json->Mensaje);
 
     }
 }
