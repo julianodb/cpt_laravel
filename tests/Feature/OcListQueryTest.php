@@ -25,11 +25,11 @@ class OcListQueryTest extends TestCase
         MercadoPublico::shouldReceive('get')->andReturn($sample);
 
         $time_start = microtime(true);
-        $response = $this->followingRedirects()->post('/oc_list_queries',['date'=>'01/01/2017']);
+        $response = $this->followingRedirects()->post('/oc_list_queries',['date'=>'01-01-2017']);
         $time_end = microtime(true);
 
         $response->assertSuccessful();
-        $response->assertSee('01/01/2017');
+        $response->assertSee('01-01-2017');
         $response->assertSee(strval($json->Cantidad));
         $this->assertLessThan(15, $time_end-$time_start);
 
