@@ -54,14 +54,18 @@ class OcListQueryController extends Controller
     	$json = json_decode($result);
 
     	if(property_exists($json, 'Codigo') and property_exists($json, 'Mensaje')) {
-    		return redirect()
-	        	->route('oc_list_queries')
+    		return redirect()>route('oc_list_queries')
 	        	->withErrors([$json->Codigo=> $json->Mensaje]);
     	}
 
     	$oc_list_query = OcListQuery::create([ 'date'=> $date,'query_date'=> new DateTime() ]);
 
     	$oc_states = OcState::all();
+
+    	if(!property_exists($json, 'Listado')){
+    		return redirect()>route('oc_list_queries')
+	        	->withErrors(['empty'=> 'Lista vacia o error encontrado']);
+    	}
 
     	$all_oc = collect($json->Listado);
     	$all_oc = $all_oc->map(function($item, $key){ 
@@ -95,7 +99,7 @@ class OcListQueryController extends Controller
         	->with('success-message','Lista de Órdenes de Compra para el '.
 									 $request->request->get('date').
 									 ' adicionada con éxito. ('.
-									 $json->Cantidad.
+									 count($json->Listado).
 									 ' items)');
     }
 
