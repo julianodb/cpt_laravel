@@ -52,6 +52,13 @@ class OcListQueryController extends Controller
  		$req_url .= '&ticket='.$ticket;
     	$result = MercadoPublico::get($req_url);
     	$json = json_decode($result);
+
+    	if(property_exists($json, 'Codigo') and property_exists($json, 'Mensaje')) {
+    		return redirect()
+	        	->route('oc_list_queries')
+	        	->withErrors([$json->Codigo=> $json->Mensaje]);
+    	}
+
     	$oc_list_query = OcListQuery::create([ 'date'=> $date,'query_date'=> new DateTime() ]);
 
     	$oc_states = OcState::all();
