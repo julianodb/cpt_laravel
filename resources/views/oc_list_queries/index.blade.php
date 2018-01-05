@@ -5,6 +5,7 @@
 	<h4 class='card-header'> Adicionar Órdenes de Compra de una fecha </h2>
 	<div class="card-body">
 		{!! Form::open(['url' => 'oc_list_queries']) !!}
+		{!! Form::label('date', 'Fecha: ') !!}
 		{!! Form::text('date',null,['id' => 'datepicker']) !!}
 		{!! Form::submit('Adicionar',['class'=> 'btn btn-primary']) !!}
 		{!! Form::close() !!}
@@ -12,7 +13,7 @@
 </div>
 <script>
 	$( function() {
-		$( "#datepicker" ).datepicker({dateFormat: "dd/mm/yy"});
+		$( "#datepicker" ).datepicker({dateFormat: "dd-mm-yy"});
 	} );
 </script>
 <form>
