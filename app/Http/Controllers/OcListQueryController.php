@@ -21,7 +21,11 @@ class OcListQueryController extends Controller
     {
         return view('oc_list_queries.index')
         	->with('title','Lista de Órdenes de Compra')
-            ->with('oc_list_queries',OcListQuery::withCount('orden_compras')->get());
+            ->with('oc_list_queries',
+            	OcListQuery::withCount('orden_compras')
+            		->orderBy('date','desc')
+            		->limit(20)
+            		->get());
     }
 
     /**
