@@ -16,23 +16,29 @@
 		$( "#datepicker" ).datepicker({dateFormat: "dd-mm-yy"});
 	} );
 </script>
-<form>
-{{--<div class="form-group">--}}
-<div class="row">
-@foreach($oc_list_queries as $item)
-	<div class="col-lg-6">
-		<div class="card card-body mb-3">
-			<div class="form-group">
-				<label for="sel{{ $item->id }}">{{$item->date}}: {{$item->orden_compras_count}} (obtenida {{$item->query_date}})</label>
-				<select multiple class="form-control" id="sel{{ $item->id }}">
-				@foreach($item->orden_compras()->limit(10)->get() as $oc)
-				    <option>{{$oc->code}}: {{$oc->pivot->name}} ({{$oc->pivot->oc_state->name }})</option>
-				@endforeach
-				</select>	
+
+<div class="container">
+<h4 class="text-dark">Listas de Órdenes de Compra</h4>
+@foreach($oc_list_queries->chunk(3) as $chunk)
+	<div class='card-deck'>
+	@foreach($chunk as $item)
+		<div class="card border-info mb-3">
+			<div class="card-body">
+				<h5 class="card-title text-dark">{{$item->date->format('d-m-Y')}}: <span class="text-info">{{$item->orden_compras_count}} items</span> </h5>
+				<p><small class="text-muted">(obtenida {{$item->query_date}})</small></p>
+				<div class="card-block pre-scrollable list-group" >
+					@foreach($item->orden_compras()->limit(10)->get() as $oc)
+					    <button type="button" class="list-group-item list-group-item-secondary list-group-item-action">
+					    	<h6><span class="font-weight-bold">{{$oc->code}}</span> ({{$oc->pivot->oc_state->name }}) :</h6>
+					    	<div>{{$oc->pivot->name}}</div>
+					    </button>
+					@endforeach
+				</div>	
 			</div>
 		</div>
+	@endforeach
 	</div>
 @endforeach
 </div>
-</form>
+
 @endsection
