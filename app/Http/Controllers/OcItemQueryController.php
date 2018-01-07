@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\OcItemQuery;
 use App\OrdenCompra;
 use App\OcState;
+use App\OcType;
+use App\OcPaymentType;
+use App\OcDeliveryType;
 use DateTime;
 use Facades\App\Util\MercadoPublico;
 use Validator;
@@ -35,7 +38,7 @@ class OcItemQueryController extends Controller
      */
     public function suggest(Request $request)
     {
-        $validation_rules = ['partial'=> 'required|string|max:500'];
+        $validation_rules = ['partial'=> 'required|string|max:50'];
         $validator = Validator::make($request->all(), $validation_rules);
 
         if ($validator->fails()) {
@@ -79,6 +82,75 @@ class OcItemQueryController extends Controller
  		$req_url .= '&ticket='.$ticket;
     	$result = MercadoPublico::get($req_url);
     	$json = json_decode($result);
+
+        if(property_exists($json, 'Codigo') and property_exists($json, 'Mensaje')) {
+            return redirect('oc_item_queries')
+                ->withErrors([$json->Codigo=> $json->Mensaje]);
+        }
+
+        if(!property_exists($json, 'Listado')){
+            return redirect('oc_item_queries')
+                ->withErrors(['empty'=> 'Lista vacia o error encontrado']);
+        }
+
+        $oc_item = $json->Listado[0];
+
+        $required_properties = ['Codigo','CodigoEstado','Estado','CodigoTipo',
+            'Tipo','TipoDespacho','FormaPago','Nombre','Descripcion',
+            'TipoMoneda','Fechas','PromedioCalificacion','CantidadEvaluacion',
+            'Financiamiento','Pais'];
+
+        $errors = [];
+        foreach($required_properties as $p){
+            if(!property_exists($oc_item, $p)){
+                $errors[] = ['missing '.$p=> 'Objeto obtenido no contiene propiedad "'.$p.'"'];
+            }
+        }
+        if(count($errors) > 0){
+            return redirect('oc_item_queries')
+                ->withErrors($errors);
+        }
+
+        $oc = OrdenCompra::firstOrCreate(['code'=> $oc_item->Codigo]);
+
+        $oc_state = OcState::firstOrCreate([
+            'code'=> $oc_item->CodigoEstado,
+            'name'=> $oc_item->Estado]);
+        
+        $oc_type = OcType::firstOrCreate([
+            'code'=> $oc_item->CodigoTipo,
+            'name'=> $oc_item->Tipo]);
+        
+        $oc_delivery_type = OcDeliveryType::firstOrCreate(['code'=> $oc_item->TipoDespacho],
+            ['name'=> $oc_item->TipoDespacho]);
+        
+        $oc_payment_type = OcPaymentType::firstOrCreate(['code'=> $oc_item->FormaPago],
+            ['name'=> $oc_item->FormaPago]);
+
+        $oc_item_query = OcItemQuery::create([
+            'query_date'=> new DateTime(),
+            'orden_compra_id'=> $oc->id,
+            'name'=> $oc_item->Nombre,
+            'oc_state_id'=> $oc_state->id,
+            'description'=> $oc_item->Descripcion,
+            'oc_type_id'=> $oc_type->id,
+            'created_at'=> $oc_item->Fechas->FechaCreacion ? 
+                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaCreacion) : null,
+            'sent_at'=> $oc_item->Fechas->FechaEnvio ? 
+                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaEnvio) : null,
+            'accepted_at'=> $oc_item->Fechas->FechaAceptacion ?
+                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaAceptacion) : null,
+            'cancelled_at'=> $oc_item->Fechas->FechaCancelacion ? 
+                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaCancelacion) : null,
+            'updated_at'=> $oc_item->Fechas->FechaUltimaModificacion ?
+                DateTime::createFromFormat('Y-m-d\TH:i:s',
+                    $oc_item->Fechas->FechaUltimaModificacion) : null,
+            'classification_mean'=> $oc_item->PromedioCalificacion,
+            'classification_n'=> $oc_item->CantidadEvaluacion,
+            'financing'=> $oc_item->Financiamiento,
+            'country'=> $oc_item->Pais,
+            'oc_delivery_type_id'=> $oc_delivery_type->id,
+            'oc_payment_type_id'=> $oc_payment_type->id ]);
 
         return redirect()
         	->route('oc_item_queries')

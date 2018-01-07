@@ -7,7 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 class OcItemQuery extends Model
 {
     public $timestamps = false;
-    //protected $fillable = ['query_date'];
+    protected $fillable = [
+            'query_date',
+            'orden_compra_id',
+            'name',
+            'oc_state_id',
+            'description',
+            'oc_type_id',
+            'created_at',
+            'sent_at',
+            'accepted_at',
+            'cancelled_at',
+            'updated_at',
+            'classification_mean',
+            'classification_n',
+            'financing',
+            'country',
+            'oc_delivery_type_id',
+            'oc_payment_type_id'
+    ];
     protected $dates = ['query_date','created_at','sent_at','accepted_at','cancelled_at','updated_at'];
 
     /**

@@ -35,7 +35,7 @@ $( "#codepicker" ).autocomplete({
 	@foreach($chunk as $item)
 		<div class="card border-info mb-3">
 			<div class="card-body">
-				<h5 class="card-title text-dark">{{ $item->code }}: <span class="text-info">{{$item->name}}</span> </h5>
+				<h5 class="card-title text-dark">{{ $item->orden_compra->code }}: <span class="text-info">{{$item->name}}</span> </h5>
 				<p><small class="text-muted">(obtenida {{$item->query_date}})</small></p>
 				<div class="card-block pre-scrollable list-group" >
 				    <button type="button" class="list-group-item list-group-item-secondary list-group-item-action">
@@ -65,11 +65,11 @@ $( "#codepicker" ).autocomplete({
 				    </button>
 				    <button type="button" class="list-group-item list-group-item-secondary list-group-item-action">
 				    	<h6><span class="font-weight-bold">Forma de Entrega</span>: </h6>
-				    	<div>{{$item->delivery_type->name}}</div>
+				    	<div>{{$item->oc_delivery_type->name}}</div>
 				    </button>
 				    <button type="button" class="list-group-item list-group-item-secondary list-group-item-action">
 				    	<h6><span class="font-weight-bold">Forma de Pago</span>: </h6>
-				    	<div>{{$item->payment_type->name}}</div>
+				    	<div>{{$item->oc_payment_type->name}}</div>
 				    </button>
 				    <button type="button" class="list-group-item list-group-item-secondary list-group-item-action">
 				    	<h6><span class="font-weight-bold">Fechas</span>: </h6>
