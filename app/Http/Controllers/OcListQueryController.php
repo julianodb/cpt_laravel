@@ -76,9 +76,8 @@ class OcListQueryController extends Controller
     		return ['code'=>$item->CodigoEstado,'name'=>$item->CodigoEstado]; });
     	foreach($all_oc->unique() as $oc) {
     		if($oc_states->where('code',$oc['code'])->where('name',$oc['name'])->count()==0) {
-    			OcState::firstOrCreate([
-    				'code' => $oc['code'], 
-    				'name' => $oc['name']]);
+    			OcState::firstOrCreate(['code' => $oc['code']],
+                    ['name' => $oc['name']]);
     			$oc_states = OcState::all();
     		}
     	}
