@@ -21,7 +21,11 @@ class OcListQueryController extends Controller
     {
         return view('oc_list_queries.index')
         	->with('title','Lista de Órdenes de Compra')
-            ->with('oc_list_queries',OcListQuery::withCount('orden_compras')->get());
+            ->with('oc_list_queries',
+            	OcListQuery::withCount('orden_compras')
+            		->orderBy('date','desc')
+            		->limit(20)
+            		->get());
     }
 
     /**
@@ -54,7 +58,7 @@ class OcListQueryController extends Controller
     	$json = json_decode($result);
 
     	if(property_exists($json, 'Codigo') and property_exists($json, 'Mensaje')) {
-    		return redirect()>route('oc_list_queries')
+    		return redirect('oc_list_queries')
 	        	->withErrors([$json->Codigo=> $json->Mensaje]);
     	}
 
@@ -63,7 +67,7 @@ class OcListQueryController extends Controller
     	$oc_states = OcState::all();
 
     	if(!property_exists($json, 'Listado')){
-    		return redirect()>route('oc_list_queries')
+    		return redirect('oc_list_queries')
 	        	->withErrors(['empty'=> 'Lista vacia o error encontrado']);
     	}
 
@@ -71,10 +75,9 @@ class OcListQueryController extends Controller
     	$all_oc = $all_oc->map(function($item, $key){ 
     		return ['code'=>$item->CodigoEstado,'name'=>$item->CodigoEstado]; });
     	foreach($all_oc->unique() as $oc) {
-    		if($oc_states->where('code',$oc['code'])->where('name',$oc['name'])->count()==0) {
-    			OcState::firstOrCreate([
-    				'code' => $oc['code'], 
-    				'name' => $oc['name']]);
+    		if($oc_states->where('code',$oc['code'])->count()==0) {
+    			OcState::firstOrCreate(['code' => $oc['code']],
+                    ['name' => $oc['name']]);
     			$oc_states = OcState::all();
     		}
     	}
@@ -87,7 +90,6 @@ class OcListQueryController extends Controller
     		$oc_attr[] = [
     			'name' => $oc->Nombre,
     			'oc_state_id' => $oc_states->where('code',$oc->CodigoEstado)
-    				->where('name',$oc->CodigoEstado)
     				->first()
     				->id];
     	}

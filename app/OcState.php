@@ -16,4 +16,12 @@ class OcState extends Model
     {
         return $this->hasMany('App\OcListQueryOrdenCompra');
     }
+
+    /**
+     * Get the OcItemQueries that belong to this state.
+     */
+    public function oc_item_queries()
+    {
+        return $this->hasMany('App\OcItemQuery');
+    }
 }

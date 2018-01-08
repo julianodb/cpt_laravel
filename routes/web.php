@@ -17,6 +17,9 @@ Route::get('/', function () {
 
 Route::get('/oc_list_queries', 'OcListQueryController@index')->name('oc_list_queries');
 Route::post('/oc_list_queries','OcListQueryController@store');
+Route::get('/oc_item_queries', 'OcItemQueryController@index')->name('oc_item_queries');
+Route::post('/oc_item_queries','OcItemQueryController@store');
+Route::post('/oc_item_queries/suggest','OcItemQueryController@suggest')->name('oc_item_suggest');
 
 Route::resource('ocs', 'OrdenCompraController');
 

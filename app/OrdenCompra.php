@@ -10,14 +10,22 @@ class OrdenCompra extends Model
     protected $fillable = ['code'];
 
     /**
-     * The OcListQuery's that contain the OrdenCompra
+     * The OcListQueries that contain the OrdenCompra
      */
     public function oc_list_queries()
     {
         return $this->belongsToMany('App\OcListQuery')
             ->withPivot('name')
             ->withPivot('oc_state_id')
-        	->using('App\OcListQueryOrdenCompra');
+            ->using('App\OcListQueryOrdenCompra');
+    }
+
+    /**
+     * The OcItemQueries that contain the OrdenCompra
+     */
+    public function oc_item_queries()
+    {
+        return $this->hasMany('App\OcItemQuery');
     }
 
     /**
