@@ -16,6 +16,24 @@ use Validator;
 class OcItemQueryController extends Controller
 {
     /**
+     * Convert accepted date formats to DateTime object
+     *
+     * @return DateTime
+     */
+    private function convert_to_datetime($candidate)
+    {
+        if(!$candidate) {
+            return null;
+        }
+        $result = DateTime::createFromFormat('Y-m-d\TH:i:s.u',$candidate);
+        $result = $result ?: DateTime::createFromFormat('Y-m-d\TH:i:s',$candidate);
+        if(!$result) {
+            return null;
+        }
+        return $result;
+    }
+
+    /**
      * Display a listing of oc_item_queries.
      *
      * @return \Illuminate\Http\Response
@@ -23,12 +41,12 @@ class OcItemQueryController extends Controller
     public function index()
     {
         return view('oc_item_queries.index')
-        	->with('title','Items de Órdenes de Compra')
+            ->with('title','Items de Órdenes de Compra')
             ->with('oc_item_queries',
-            	OcItemQuery::query()
-            		->orderBy('query_date','desc')
-            		->limit(100)
-            		->get());
+                OcItemQuery::query()
+                    ->orderBy('query_date','desc')
+                    ->limit(100)
+                    ->get());
     }
 
     /**
@@ -117,9 +135,8 @@ class OcItemQueryController extends Controller
             'code'=> $oc_item->CodigoEstado,
             'name'=> $oc_item->Estado]);
         
-        $oc_type = OcType::firstOrCreate([
-            'code'=> $oc_item->CodigoTipo,
-            'name'=> $oc_item->Tipo]);
+        $oc_type = OcType::firstOrCreate(['code'=> $oc_item->Tipo],
+            ['name'=> $oc_item->Tipo]);
         
         $oc_delivery_type = OcDeliveryType::firstOrCreate(['code'=> $oc_item->TipoDespacho],
             ['name'=> $oc_item->TipoDespacho]);
@@ -134,20 +151,17 @@ class OcItemQueryController extends Controller
             'oc_state_id'=> $oc_state->id,
             'description'=> $oc_item->Descripcion,
             'oc_type_id'=> $oc_type->id,
-            'created_at'=> $oc_item->Fechas->FechaCreacion ? 
-                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaCreacion) : null,
-            'sent_at'=> $oc_item->Fechas->FechaEnvio ? 
-                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaEnvio) : null,
-            'accepted_at'=> $oc_item->Fechas->FechaAceptacion ?
-                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaAceptacion) : null,
-            'cancelled_at'=> $oc_item->Fechas->FechaCancelacion ? 
-                DateTime::createFromFormat('Y-m-d\TH:i:s.u',$oc_item->Fechas->FechaCancelacion) : null,
-            'updated_at'=> $oc_item->Fechas->FechaUltimaModificacion ?
-                DateTime::createFromFormat('Y-m-d\TH:i:s',
-                    $oc_item->Fechas->FechaUltimaModificacion) : null,
+            'created_at'=> $this->convert_to_datetime($oc_item->Fechas->FechaCreacion),
+            'sent_at'=> $this->convert_to_datetime($oc_item->Fechas->FechaEnvio),
+            'accepted_at'=> $this->convert_to_datetime($oc_item->Fechas
+                ->FechaAceptacion),
+            'cancelled_at'=> $this->convert_to_datetime($oc_item->Fechas
+                ->FechaCancelacion),
+            'updated_at'=> $this->convert_to_datetime($oc_item->Fechas
+                ->FechaUltimaModificacion),
             'classification_mean'=> $oc_item->PromedioCalificacion,
             'classification_n'=> $oc_item->CantidadEvaluacion,
-            'financing'=> $oc_item->Financiamiento,
+            'financing'=> $oc_item->Financiamiento ?: '',
             'country'=> $oc_item->Pais,
             'oc_delivery_type_id'=> $oc_delivery_type->id,
             'oc_payment_type_id'=> $oc_payment_type->id ]);
