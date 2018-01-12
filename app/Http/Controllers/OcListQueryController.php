@@ -23,7 +23,8 @@ class OcListQueryController extends Controller
         	->with('title','Lista de Órdenes de Compra')
             ->with('oc_list_queries',
             	OcListQuery::withCount('orden_compras')
-            		->orderBy('date','desc')
+                    ->orderBy('date','desc')
+                    ->orderBy('query_date','desc')
             		->limit(20)
             		->get());
     }
@@ -86,7 +87,7 @@ class OcListQueryController extends Controller
     	$oc_attr = [];
 
     	foreach($json->Listado as $oc) {
-    		$ocs[] = OrdenCompra::firstOrNew(['code' => $oc->Codigo]);
+    		$ocs[] = OrdenCompra::firstOrCreate(['code' => $oc->Codigo]);
     		$oc_attr[] = [
     			'name' => $oc->Nombre,
     			'oc_state_id' => $oc_states->where('code',$oc->CodigoEstado)
